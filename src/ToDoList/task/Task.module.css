@@ -1,0 +1,130 @@
+.task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--gray-500);
+    border: 1px solid var(--gray-400);
+    border-radius: 8px;
+    padding: 1rem;
+    gap: 3rem;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+
+}
+
+.disabled {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--gray-500);
+    border: 1px solid var(--gray-400);
+    border-radius: 8px;
+    padding: 1rem;
+    gap: 3rem;
+    opacity: 0.4;
+    text-decoration: line-through;
+}
+
+.disabled input {
+    position: relative;
+    top: 1rem;
+    left: 1rem;
+    opacity: 0;
+    cursor: pointer;
+    height: 1.563rem;
+    width: 1.563rem;
+    z-index: 1;
+}
+
+.task input {
+    position: relative;
+    top: 1rem;
+    left: 1rem;
+    opacity: 0;
+    cursor: pointer;
+    height: 1.563rem;
+    width: 1.563rem;
+    z-index: 1;
+}
+
+.checkmark {
+    display: flex;
+    position: relative;
+    top: -0.8rem;
+    left: 1rem;
+    height: 1.563rem;
+    width: 1.563rem;
+    border: 1px solid var(--blue);
+    border-radius:  50%;
+}
+
+.task input:hover ~ .checkmark{
+    background-color: var(--purple);
+}
+
+.disabled input:hover ~ .checkmark{
+    background-color: var(--purple);
+}
+
+.disabled input:checked ~ .checkmark{
+    background-color: var(--purple-dark);
+}
+
+.checkmark:after {
+    content: "";
+    position: relative;
+    display: none;
+}
+
+.disabled input:checked ~ .checkmark:after {
+    display: block;
+    color: #fff;
+}
+
+.disabled .checkmark:after {
+    left: 0.5rem;
+    top: 0.281rem;
+    width: 0.313rem;
+    height: 0.625rem;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.task p {
+    font-weight: 400;
+    font-size: 0.875rem;
+    line-height: 140%;    
+    color: var(--gray-100);
+}
+
+.task button {
+    background: transparent;
+    border: 0;
+    color: var(--gray-100);
+    cursor: pointer;
+    line-height: 0;
+}
+
+.task button:hover {
+    color: var(--red);
+    background: transparent;
+}
+
+.disabled button {
+    background: transparent;
+    border: 0;
+    color: var(--gray-100);
+    cursor: pointer;
+    line-height: 0;
+}
+
+.disabled button:hover {
+    color: var(--red);
+    background: transparent;
+}
