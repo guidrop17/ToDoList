@@ -8,7 +8,7 @@ function App() {
   return (
       <>
         <ToDoList />
-        <ToastContainer position="top-right"/>
+        <ToastContainer position="top-right" theme="dark" pauseOnHover/>
       </>
   )
 }

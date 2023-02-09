@@ -1,38 +1,38 @@
+import React, { ChangeEvent, FormEvent, InvalidEvent, useState } from "react";
 import styles from "./ToDoList.module.css";
 import { PlusCircle, ClipboardText } from "phosphor-react";
 import LogoToDoList from "../assets/Logo.svg";
-import { ChangeEvent, FormEvent, InvalidEvent, useState } from "react";
 import { Task } from "./task/Task";
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-interface Task {
+interface ITask {
     task: string;
     id: string;
     isChecked: boolean;
   }
 
 export const ToDoList = () => {
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [newTask, setnewTask] = useState("")
-    const [counterTask, setCounterTask] = useState(0)
-    const [counterTaskComplete, setCounterTaskComplete] = useState(0)
+    const [tasks, setTasks] = useState<ITask[]>([]);
+    const [inputValue, setInputValue] = useState("")
+    const [taskCounts, setTaskCounts] = useState({ total: 0, completed: 0 });
     const [checked, setChecked] = useState(false)
 
-    const handleNewTaskChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         event.target.setCustomValidity("")
-        setnewTask(event.target.value)
+        setInputValue(event.target.value)
     };
 
-    const handleCreateNewTask = (event: FormEvent) => {
+    const handleAddTask = (event: FormEvent) => {
         event.preventDefault();
-        setCounterTask(counterTask + 1)
-        setTasks([...tasks, {task: newTask, id: uuidv4(), isChecked: checked}])
-        setnewTask("")
+        setTaskCounts({...taskCounts, total: taskCounts.total + 1})
+        setTasks([...tasks, {task: inputValue, id: uuidv4(), isChecked: checked}])
+        setInputValue("")
+        toast.info("Tarefa adicionada a lista")
     };
 
-    const handleNewTaskInvalid = (event: InvalidEvent<HTMLTextAreaElement>) => {
+    const handleInputInvalid = (event: InvalidEvent<HTMLTextAreaElement>) => {
         event.target.setCustomValidity("Este campo é obrigatório!")
     };
 
@@ -42,36 +42,28 @@ export const ToDoList = () => {
                 item.id !== taskToDelete
             )
         })
-        setCounterTask(counterTask - 1)
+        setTaskCounts({...taskCounts, total: taskCounts.total - 1, completed: tasksWithoutDeletedOne.length })
         setTasks(tasksWithoutDeletedOne)
-
-        if(checked === true) {
-            setCounterTaskComplete(counterTaskComplete - 1)
-        }
+        toast.error("Tarefa excluida com sucesso")
     };
     
-    const handleCheckboxChange = () => {
-        const toggleChecked = (ids: any) => {
-            tasks.filter((item) => {
-                console.log("id", item)
-                console.log("idssss", ids)
-                if(item !== ids){
-                    console.log("if")
-                    return { ...item, isChecked: !checked }
+    const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+        
+        const toggleChecked =
+            tasks.map((item) => {
+                if(item && item.id === event.target.id){
+                    return {...item, isChecked: !item.isChecked};
                 }else{
-                    console.log("else")
-                    return item
+                    return item;
                 }
             });
-        };
-        
         setTasks(toggleChecked);
+        toast.success("Menos uma tarefa na sua lista")
 
-        const tasksCompleted = tasks.filter((item) => item.isChecked === true);
+        const tasksCompleted = toggleChecked.filter((item) => item.isChecked === true);
+
         if(tasksCompleted) {
-            setCounterTaskComplete(counterTaskComplete + 1)
-        }else{
-            setCounterTaskComplete(counterTaskComplete - 1)
+            setTaskCounts({...taskCounts, completed: tasksCompleted.length})
         }
     }
 
@@ -82,13 +74,13 @@ export const ToDoList = () => {
             </header>
 
             <section className={styles.section}>
-                <form className={styles.taskAdd} onSubmit={handleCreateNewTask}>
+                <form className={styles.taskAdd} onSubmit={handleAddTask}>
                     <textarea 
                     name="task"
                     placeholder="Adicione uma nova tarefa"
-                    value={newTask}
-                    onChange={handleNewTaskChange}
-                    onInvalid={handleNewTaskInvalid}
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onInvalid={handleInputInvalid}
                     required 
                     />
                     <button type="submit">Criar <PlusCircle size={16}/></button>
@@ -97,14 +89,14 @@ export const ToDoList = () => {
                     <div className={styles.taskSection}>
                         <div>
                             <p className={styles.tasksCreate}>Tarefas Criadas</p>
-                            <p className={styles.taskCount}>{counterTask}</p>
+                            <p className={styles.taskCount}>{taskCounts.total}</p>
                         </div>
                         <div>
                             <p className={styles.tasksCompleted}>Concluidas</p>
-                            <p className={styles.taskCount}>{counterTaskComplete}</p>
+                            <p className={styles.taskCount}>{taskCounts.completed}</p>
                         </div>
                     </div> 
-                    {counterTask <= 0 && (
+                    {taskCounts.total <= 0 && (
                         <div className={styles.taskContent}>
                             <div>
                                 <ClipboardText size={56} />
@@ -121,12 +113,12 @@ export const ToDoList = () => {
                         {tasks.map((item) => {
                             return (
                                 <Task
-                                key={item.task}
-                                id={item.id}
-                                content={item.task}
-                                onChangeValueTask={handleCheckboxChange}
-                                onClickDeleteTask={deleteTask}
-                                isChecked={item.isChecked}
+                                    key={item.task}
+                                    id={item.id}
+                                    content={item.task}
+                                    onChangeValueTask={handleCheckboxChange}
+                                    onClickDeleteTask={deleteTask}
+                                    isChecked={item.isChecked}
                                 ></Task>
                                 )
                             })}
